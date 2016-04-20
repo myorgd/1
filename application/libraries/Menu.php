@@ -107,10 +107,12 @@ class Menu {
 	private function _menu_line($row, $activuri = false, $end = false)
 	{
 
-		if ($activuri == $row['URL']){
-			$Out = '<li><a href="'.base_url().$row['URL'].'" class="active"><i class="fa fa-'.$row['Name_Img'].' fa-fw"></i>'.$row['Name_URL'];
+		$url = ($row['URL'] != NULL) ? base_url().$row['URL'] : '#' ;
+
+		if ($activuri == $row['URL'] && $activuri != false){
+			$Out = '<li><a href="'.$url.'" class="active"><i class="fa fa-'.$row['Name_Img'].' fa-fw"></i>'.$row['Name_URL'];
 		} else {
-			$Out = '<li><a href="'.base_url().$row['URL'].'"><i class="fa fa-'.$row['Name_Img'].' fa-fw"></i>'.$row['Name_URL'];
+			$Out = '<li><a href="'.$url.'"><i class="fa fa-'.$row['Name_Img'].' fa-fw"></i>'.$row['Name_URL'];
 		}
 
 		return (!$end) ? $Out.'</a></li>' : $Out.'<span class="fa arrow"></span></a><ul class="nav nav-second-level collapse">';
