@@ -12,24 +12,14 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<meta name="author" content="">
 
 	<title><?PHP echo $title; ?></title>
-
-	<!-- Bootstrap Core CSS -->
-	<link href="<?PHP echo base_url(); ?>/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-
-	<!-- MetisMenu CSS -->
-	<link href="<?PHP echo base_url(); ?>/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+	
+	<?PHP $this->loadlib->show_css(); ?>
 
 	<!-- Timeline CSS -->
 	<link href="<?PHP echo base_url(); ?>/dist/css/timeline.css" rel="stylesheet">
 
-	<!-- Custom CSS -->
-	<link href="<?PHP echo base_url(); ?>/dist/css/sb-admin-2.css" rel="stylesheet">
-
 	<!-- Morris Charts CSS -->
 	<link href="<?PHP echo base_url(); ?>/bower_components/morrisjs/morris.css" rel="stylesheet">
-
-	<!-- Custom Fonts -->
-	<link href="<?PHP echo base_url(); ?>/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -120,21 +110,13 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<?PHP endif; ?>
 <!-- /#wrapper -->
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <strong>{memory_usage}</strong> mem. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
-<!-- jQuery -->
-<script src="<?PHP echo base_url(); ?>/bower_components/jquery/dist/jquery.min.js"></script>
 
-<!-- Bootstrap Core JavaScript -->
-<script src="<?PHP echo base_url(); ?>/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-
-<!-- Metis Menu Plugin JavaScript -->
-<script src="<?PHP echo base_url(); ?>/bower_components/metisMenu/dist/metisMenu.min.js"></script>
+<?PHP $this->loadlib->show_js(); ?>
 
 <!-- Morris Charts JavaScript -->
 <script src="<?PHP echo base_url(); ?>/bower_components/raphael/raphael-min.js"></script>
 <script src="<?PHP echo base_url(); ?>/bower_components/morrisjs/morris.min.js"></script>
 <script src="<?PHP echo base_url(); ?>/js/morris-data.js"></script>
-<!-- Custom Theme JavaScript -->
-<script src="<?PHP echo base_url(); ?>/dist/js/sb-admin-2.js"></script>
 
 </body>
 
