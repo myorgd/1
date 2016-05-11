@@ -18,6 +18,30 @@ class Devices_model extends CI_Model {
 		return $query->result();
 	}
 
+	public function insert_device($Data, $OutId = false)
+	{		 if ($this->db->insert('devices', $Data))
+		 {
+			 if($OutId)
+			 {
+			 	return $this->get_id_mac($mac);			 }
+			 return true;
+		 }
+		 else
+		 {
+			return false;		 }
+	}
+
+	public function get_id_mac($mac = '')
+	{
+		$query = $this->db->select('ID_Devices')->get_where('devices', array('MAC' => $mac));
+		$row = $query->row();
+
+		if (isset($row))
+		{			return $row->ID_Devices;
+		}
+		return false;
+	}
+
 	public function insert_entry()
 	{
 		$this->title    = $_POST['title']; // please read the below note
