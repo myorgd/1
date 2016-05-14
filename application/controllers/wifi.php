@@ -23,12 +23,58 @@ class Wifi extends CI_Controller {
 	{
 		parent::__construct();
 		// Your own constructor code
+		$this->load->model('devices_model', 'devices');
 	}
 
 	public function index()
 	{
 		$data['Page'] = 'wifi/auth';
 		$data['title'] = 'Авторизация для доступа в интернет';
-		$this->load->view('main', $data);
+
+		$Data = $this->_gettoarray();
+        if ($Data['mac'] != $this->session->userdata('mac'))
+        {
+        	if ($this->devices->get_id_mac($Data['mac']) == false)
+        	{
+				$this->session->set_userdata([
+				'mac' => $this->devices->insert_device(['MAC' => $Data['mac'], 'ID_Routers' => $Data['nasid']], true),
+				'nasid' => $Data['nasid']]);
+        	}
+        	 else
+        	{
+        	    $this->session->set_userdata(['mac' => $Data['mac'],
+							        	      'uamip' => $Data['uamip'],
+							        	      'uamport' => $Data['uamport'],
+        	    							  'challenge' => $Data['challenge'],
+        	    							  'nasid' => $Data['nasid']]);
+        	}
+        }
+
+        $this->load->view('main', $data);
 	}
+
+	public function access()
+	{
+		$uamsecret = 'secret';
+	    $hexchal = pack ("H32", $this->session->userdata('challenge'));
+	    $newchal = $uamsecret ? pack("H*", md5($hexchal . $uamsecret)) : $hexchal;
+	    $response = md5("\0" . $this->input->post('password') . $newchal);
+
+	    $newpwd = pack("a32", $this->input->post('password'));
+	    $pappassword = implode ('', unpack("H32", ($newpwd ^ $newchal)));
+
+	    redirect('http://'.$this->session->userdata('uamip').':'.
+	    		 $this->session->userdata('uamport').'/logon?username='.
+	    		 $this->input->post('email').'&password='.$pappassword);
+	}
+
+	private function _gettoarray()
+	{
+		$arraydata = array();
+		foreach (explode('&', $this->input->get('loginurl')) as $val)
+		{
+			$tempArr = explode('=', $val));
+			$arraydate[$tempArr[0]] = $tempArr[1];
+		}
+		return $arraydate;	}
 }
