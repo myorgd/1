@@ -44,7 +44,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body>
 
 <div id="wrapper">
-	<?PHP if ($Page != 'login' && $Page != 'reg'):?>
+	<?PHP if ($Page != 'auth/index' && $Page != 'reg/index'):?>
 	<!-- Navigation -->
 	<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 		<div class="navbar-header">

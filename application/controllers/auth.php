@@ -36,16 +36,21 @@ class Auth extends CI_Controller {
 		{
 			if ($this->users->block()) {
 				if ($this->users->auth_users()) {
-					redirect('/panel');
+					if ($this->session->userdata('ID_Org') == null)
+					{
+						redirect('/company/add');
+					} else {
+						redirect('/panel');
+					}
 				} else {
 					$this->msg->add('Не верно введен логин или пароль.', 0);
 				}
 			} else {
-				$this->msg->add('Попробуйте еще раз через 5 минут', 0);
+				$this->msg->add('Попробуйте еще раз через 5 минут.', 0);
 			}
 		}
 
-		$data['Page'] = 'login';
+		$data['Page'] = 'auth/index';
 		$data['title'] = 'Авторизация';
 		$this->load->view('main', $data);
 	}

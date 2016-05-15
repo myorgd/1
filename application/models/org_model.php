@@ -11,29 +11,21 @@ class Org_model extends CI_Model {
 		// Call the CI_Model constructor
 		parent::__construct();
 	}
-
-	public function get_last_ten_entries()
+		
+	public function edit($Org_Name)
 	{
-		$query = $this->db->get('entries', 10);
-		return $query->result();
+			$NAS_Name .= $this->session->userdata('ID_Org');			
+			$data = [
+					'Attribute' => "Auth-Type",
+					'Value' => "Local"
+			];
+
+			$this->db->where('GroupName', $Name_Group)->update('radgroupcheck', $data);
 	}
-
-	public function insert_entry()
-	{
-		$this->title    = $_POST['title']; // please read the below note
-		$this->content  = $_POST['content'];
-		$this->date     = time();
-
-		$this->db->insert('entries', $this);
-	}
-
-	public function update_entry()
-	{
-		$this->title    = $_POST['title'];
-		$this->content  = $_POST['content'];
-		$this->date     = time();
-
-		$this->db->update('entries', $this, array('id' => $_POST['id']));
+	
+	public function add()
+	{	
+			return ($this->db->insert('org', ['Name' => $this->input->post('Org_Name')])) ? $this->db->insert_id() : false ;
 	}
 
 }

@@ -28,7 +28,7 @@ class Panel extends CI_Controller {
 
 	public function index()
 	{
-		$data['Page'] = 'index';
+		$data['Page'] = 'panel/index';
 		$data['title'] = 'Панель управления';
 		$this->load->view('main', $data);
 	}

@@ -31,18 +31,21 @@ class Reg extends CI_Controller {
 	{
 
 			$this->form_validation->set_rules('phone', 'номер телефона', 'required');
+			//Починить здесь уникальность логина (Могут просканировать БД на логины)
 			$this->form_validation->set_rules('email', 'E-mail', 'required|valid_email|is_unique[users.Login]');
-			$this->form_validation->set_rules('rules', 'тип пользователя', 'required|in_list[' . $this->users->get_rules_id_str() . ']');
+			$this->form_validation->set_rules('rules', 'тип пользователя', 'required|in_list[' . $this->users->get_rules_id_public_str() . ']');
 			$this->form_validation->set_rules('captcha', 'код', 'required|captcha');
 			$this->form_validation->set_message('in_list', 'Поле {field} выбрано не правильно.');
 
 			if ($this->form_validation->run()) {
 				if ($this->users->block()) {
+					
 					if ($this->users->reg()) {
 						//redirect('/panel');
 					} else {
 						$this->msg->add('Ошибка, попробуйте еще раз.', 0);
 					}
+					
 				} else {
 					$this->msg->add('Попробуйте еще раз через 5 минут', 0);
 				}
@@ -80,8 +83,9 @@ class Reg extends CI_Controller {
 				]);
 
 		$data['image'] = $cap['image'];
-		$data['Page'] = 'reg';
+		$data['Page'] = 'reg/index';
 		$data['title'] = 'Регистрация';
 		$this->load->view('main', $data);
 	}
+	
 }

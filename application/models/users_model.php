@@ -16,9 +16,9 @@ class Users_model extends CI_Model {
 		parent::__construct();
 	}
 
-	public function get_rules_id_str()
+	public function get_rules_id_public_str()
 	{
-		$query = $this->db->select('ID_Rules, Name')->where_in('Name', ['Партнер', 'Клиент'])->get('rules');
+		$query = $this->db->select('ID_Rules, Name')->where('Public_Reg', 1)->get('rules');
 		$rules = '';
 		foreach ($query->result() as $row) {
 			$rules .= $row->ID_Rules . ',';
@@ -29,7 +29,7 @@ class Users_model extends CI_Model {
 
 	public function get_rules_id_select()
 	{
-		$query = $this->db->select('ID_Rules, Name')->where_in('Name', ['Партнер', 'Клиент'])->get('rules');
+		$query = $this->db->select('ID_Rules, Name')->where('Public_Reg', 1)->get('rules');
 		foreach ($query->result() as $row) {
 			$data[$row->ID_Rules] = $row->Name;
 		}
@@ -47,8 +47,10 @@ class Users_model extends CI_Model {
 				'Phone'     => $this->input->post('phone'),
 				'Pass'  	=> password_hash($pass, PASSWORD_DEFAULT)
 		];
+		
 		if ($this->db->insert('users', $data)) {
-
+			echo $pass; 
+/* Расскоментировать перед релизом
 			$this->load->library('email');
 
 			$this->email->from('your@example.com', 'Your Name');
@@ -58,7 +60,7 @@ class Users_model extends CI_Model {
 			$this->email->message('Ваш пароль для входа: ' . $pass . ', логин ваш E-Mail.');
 
 			$this->email->send();
-
+*/
 			return true;
 
 		}
@@ -66,32 +68,45 @@ class Users_model extends CI_Model {
 
 	}
 
-	public function update_users()
+	public function update_pass()
 	{
 		$this->load->helper('string');
-		$this->db->update('users', ['Pass' => password_hash(random_string('alnum', 8), PASSWORD_DEFAULT)], ['ID_Users' => $this->session->userdata('ID')]);
+		return $this->db->update('users', ['Pass' => password_hash(random_string('alnum', 8), PASSWORD_DEFAULT)], ['ID_Users' => $this->session->userdata('ID')]);
+	}
+	
+	public function update_org($id)
+	{
+		$this->load->helper('string');
+		return $this->db->update('users', ['ID_Org' => $id], ['ID_Users' => $this->session->userdata('ID')]);
 	}
 
-	public function delete_users($id)
+	public function delete($id)
 	{
 		$this->db->delete('users', ['ID_Users' => $id]);
 	}
 
-	public function auth_users()
+	public function auth()
 	{
-		$query = $this->db->get_where('users', ['Login' => $this->input->post('email')], 1);
+		$query = $this->db->select('users.ID_Users, Login, ID_Rules, ID_Org, Pass, Add_Org, Add_More_Org')
+						->join('org', 'org.ID_Users = users.ID_Users', 'left')
+						->join('rules', 'rules.ID_Rules = users.ID_Rules', 'left')
+						->get_where('users', ['Login' => $this->input->post('email')], 1);
 		$row = $query->row();
 
 		if (isset($row) && password_verify($this->input->post('password'), $row->Pass))
 		{
 			$newdata = [
-					'ID'  		=> $row->ID_Users,
-					'Login'     => $row->Login,
-					'Rules'  	=> $row->ID_Rules,
-					'ID_Org'    => $row->ID_Org,
-					'logged_in' => true
+					'ID'  			=> $row->ID_Users,
+					'Login'     	=> $row->Login,
+					'Rules'  		=> $row->ID_Rules,
+					'ID_Org'   	 	=> $row->ID_Org,
+					'Add_Org'    	=> $row->Add_Org,
+					'Add_More_Org' 	=> $row->Add_More_Org,
+					'logged_in' 	=> true
 			];
-
+			//удалить
+			print_r($newdata);
+			
 			$this->session->set_userdata($newdata);
 			return true;
 		}
@@ -103,7 +118,7 @@ class Users_model extends CI_Model {
 		$expiration = time() - 300;
 		$this->db->where('Datetime < ', $expiration)->delete('access_bad');
 
-		if ($this->db->where('ip_address', $this->input->ip_address())->count_all_results('access_bad') < 3) {
+		if ($this->db->where('ip_address', $this->input->ip_address())->count_all_results('access_bad') < 5) {
 			$data = [
 					'Datetime' => time(),
 					'Login' => $this->input->post('email'),
@@ -117,7 +132,7 @@ class Users_model extends CI_Model {
 		}
 	}
 
-	public function logouth_users()
+	public function logouth()
 	{
 		$this->session->sess_destroy();
 	}
