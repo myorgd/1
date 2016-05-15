@@ -35,7 +35,7 @@ class Auth extends CI_Controller {
 		if ($this->form_validation->run())
 		{
 			if ($this->users->block()) {
-				if ($this->users->auth_users()) {
+				if ($this->users->auth()) {
 					if ($this->session->userdata('ID_Org') == null)
 					{
 						redirect('/company/add');
