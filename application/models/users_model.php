@@ -74,12 +74,6 @@ class Users_model extends CI_Model {
 		return $this->db->update('users', ['Pass' => password_hash(random_string('alnum', 8), PASSWORD_DEFAULT)], ['ID_Users' => $this->session->userdata('ID')]);
 	}
 	
-	public function update_org($id)
-	{
-		$this->load->helper('string');
-		return $this->db->update('users', ['ID_Org' => $id], ['ID_Users' => $this->session->userdata('ID')]);
-	}
-
 	public function delete($id)
 	{
 		$this->db->delete('users', ['ID_Users' => $id]);
@@ -87,7 +81,7 @@ class Users_model extends CI_Model {
 
 	public function auth()
 	{
-		$query = $this->db->select('users.ID_Users, Login, ID_Rules, ID_Org, Pass, Add_Org, Add_More_Org')
+		$query = $this->db->select('users.ID_Users, Login, users.ID_Rules, ID_Org, Pass, Add_Org')
 						->join('org', 'org.ID_Users = users.ID_Users', 'left')
 						->join('rules', 'rules.ID_Rules = users.ID_Rules', 'left')
 						->get_where('users', ['Login' => $this->input->post('email')], 1);
@@ -101,7 +95,6 @@ class Users_model extends CI_Model {
 					'Rules'  		=> $row->ID_Rules,
 					'ID_Org'   	 	=> $row->ID_Org,
 					'Add_Org'    	=> $row->Add_Org,
-					'Add_More_Org' 	=> $row->Add_More_Org,
 					'logged_in' 	=> true
 			];
 			//удалить

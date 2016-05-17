@@ -11,7 +11,6 @@ class Access_url_model extends CI_Model {
 	{
 		// Call the CI_Model constructor
 		parent::__construct();
- 		//if ($this->uri->segment(1, '') != 'auth' && $this->uri->segment(1, '') != 'reg') {
 
 			if ($this->session->userdata('logged_in')) {
 				$this->db->where('ID_Rules', $this->session->userdata('Rules'));
@@ -26,7 +25,6 @@ class Access_url_model extends CI_Model {
 			if (!$this->db->count_all_results()) {
 				redirect('/');
 			}
-		//}
 
 	}
 

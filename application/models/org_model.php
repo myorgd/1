@@ -12,20 +12,18 @@ class Org_model extends CI_Model {
 		parent::__construct();
 	}
 		
-	public function edit($Org_Name)
-	{
-			$NAS_Name .= $this->session->userdata('ID_Org');			
-			$data = [
-					'Attribute' => "Auth-Type",
-					'Value' => "Local"
-			];
-
-			$this->db->where('GroupName', $Name_Group)->update('radgroupcheck', $data);
+	public function edit()
+	{			
+			return $this->db->where('ID_Org', $this->session->userdata('ID_Org'))->update('org', ['Name' => $this->input->post('Org_Name')]);
 	}
 	
 	public function add()
 	{	
-			return ($this->db->insert('org', ['Name' => $this->input->post('Org_Name')])) ? $this->db->insert_id() : false ;
+		$data = [
+			'ID_Users' => $this->session->userdata('ID'),
+			'Name' => $this->input->post('Org_Name')
+		];
+			return ($this->db->insert('org', $data)) ? $this->db->insert_id() : false ;
 	}
 
 }

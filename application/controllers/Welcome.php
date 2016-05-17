@@ -20,7 +20,7 @@ class Welcome extends CI_Controller {
 	 */
 	public function index()
 	{
-		$data['Page'] = 'index';
+		$data['Page'] = 'panel/index';
 		$data['title'] = 'Начало';
 		$this->msg->add('Внимание ошибка!', 3);
 		$this->msg->add('Внимание ошибка!2', 3);

@@ -62,7 +62,7 @@ class Menu {
 	}
 
 	public function show()
-	{echo $this->CI->session->userdata('Rules');
+	{
 		$uri_str = uri_string();
 		$query = $this->CI->db->select('ID_PARENT, Name_Img, URL, Name_URL')
 				->join('access_url', 'access_url.ID_URL = url.ID_URL')
@@ -77,28 +77,31 @@ class Menu {
 			}
 		}
 
-		$query = $this->CI->db->select('ID_URL, Name_Img, URL, Name_URL')
-				->where_in('ID_URL', $datatemp)
-				->or_where('`ID_PARENT` IS NULL', null, false)
-				->get('url');
-
 		$Out = '<div class="navbar-default sidebar" role="navigation"><div class="sidebar-nav navbar-collapse"><ul class="nav" id="side-menu">';
+		
+		if ($datatemp != null)
+		{
+			$query = $this->CI->db->select('ID_URL, Name_Img, URL, Name_URL')
+					->where_in('ID_URL', $datatemp)
+					->or_where('`ID_PARENT` IS NULL', null, false)
+					->get('url');
 
-		foreach ($query->result_array() as $row) {
+			foreach ($query->result_array() as $row) {
 
-			if (array_key_exists ($row['ID_URL'], $data)){
-				$Out .= $this->_menu_line($row, $uri_str, true);
+				if (array_key_exists ($row['ID_URL'], $data)){
+					$Out .= $this->_menu_line($row, $uri_str, true);
 
-				foreach ($data[$row['ID_URL']] as $val){
-					$Out .= $this->_menu_line($val, $uri_str);
+					foreach ($data[$row['ID_URL']] as $val){
+						$Out .= $this->_menu_line($val, $uri_str);
+					}
+
+					$Out .= '</ul></li>';
+				} else {
+					$Out .= $this->_menu_line($row, $uri_str);
 				}
-
-				$Out .= '</ul></li>';
-			} else {
-				$Out .= $this->_menu_line($row, $uri_str);
 			}
 		}
-
+		
 		$Out .=  '</ul></div></div>';
 
 		return $Out;

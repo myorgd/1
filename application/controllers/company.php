@@ -23,6 +23,7 @@ class Company extends CI_Controller {
 	{
 		parent::__construct();
 		// Your own constructor code
+		$this->load->model('access_url_model');
 		$this->load->model('org_model', 'org');
 		$this->load->model('users_model', 'users');
 	}
@@ -41,14 +42,13 @@ class Company extends CI_Controller {
 
 		if ($this->form_validation->run())
 		{
-			if ($this->_true_add_org())
+			if ($this->session->userdata('Add_Org') && $this->session->userdata('ID_Org') == null)
 			{
 				$ID = $this->org->add();
 				
 				if ($ID != false)
 				{
 					$this->session->set_userdata('ID_Org', $ID);
-					$this->users->update_org($ID);
 					redirect('/company');		
 				} else {
 					$this->msg->add('Ошибка попробуйте еще раз', 0);
@@ -59,18 +59,33 @@ class Company extends CI_Controller {
 		}
 		
 		$data['Page'] = 'company/add';
-		$data['title'] = 'Информация об компании';
+		$data['title'] = 'Добавить компанию';
 		$this->load->view('main', $data);
 	}
 	
-	private function _true_add_org()
+	public function edit()
 	{
-		if ($this->session->userdata('Add_Org'))
-			if ($this->session->userdata('ID_Org') == null || $this->session->userdata('Add_More_Org'))
+		if ($this->session->userdata('ID_Org') != null)
+		{
+			$data['Page'] = 'company/edit';
+			
+			$this->form_validation->set_rules('orgname', 'название организации', 'required');
+
+			if ($this->form_validation->run())
 			{
-				return true;
+				$this->org->edit();
+			} else {
+				$query = $this->db->select('Name')->get_where('org', ['ID_Users' => $this->session->userdata('ID')]);
+				$row = $query->row();
+				$data['Name'] = $row->Name;
 			}
+			
+		} else {
+			$data['Page'] = 'source';
+			$this->msg->add('Вам запрещено это действие', 0);
 		}
-		return false;
+		
+		$data['title'] = 'Редактирование информация о компании';
+		$this->load->view('main', $data);
 	}
 }
