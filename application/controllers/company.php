@@ -38,27 +38,31 @@ class Company extends CI_Controller {
 	
 	public function add()
 	{
-		$this->form_validation->set_rules('orgname', 'название организации', 'required');
-
-		if ($this->form_validation->run())
+		if ($this->session->userdata('Add_Org') && $this->session->userdata('ID_Org') == null)
 		{
-			if ($this->session->userdata('Add_Org') && $this->session->userdata('ID_Org') == null)
+			$data['Page'] = 'company/add';
+			
+			$this->form_validation->set_rules('orgname', 'название организации', 'required');
+
+			if ($this->form_validation->run())
 			{
-				$ID = $this->org->add();
-				
-				if ($ID != false)
-				{
-					$this->session->set_userdata('ID_Org', $ID);
-					redirect('/company');		
-				} else {
-					$this->msg->add('Ошибка попробуйте еще раз', 0);
-				}
-			} else {
-				$this->msg->add('Вам запрещено это действие', 0);
+
+					$ID = $this->org->add();
+					
+					if ($ID != false)
+					{
+						$this->session->set_userdata('ID_Org', $ID);
+						redirect('/company');		
+					} else {
+						$this->msg->add('Ошибка попробуйте еще раз', 0);
+					}
 			}
+			
+		} else {
+			$data['Page'] = 'source';
+			$this->msg->add('Вам запрещено это действие', 0);
 		}
 		
-		$data['Page'] = 'company/add';
 		$data['title'] = 'Добавить компанию';
 		$this->load->view('main', $data);
 	}

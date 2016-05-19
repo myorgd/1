@@ -97,8 +97,6 @@ class Users_model extends CI_Model {
 					'Add_Org'    	=> $row->Add_Org,
 					'logged_in' 	=> true
 			];
-			//удалить
-			print_r($newdata);
 			
 			$this->session->set_userdata($newdata);
 			return true;

@@ -13,28 +13,38 @@ class Tst_model extends CI_Model {
 		parent::__construct();
 	}
 
-	public function get_last_ten_entries()
+	public function get_all()
 	{
-		$query = $this->db->get('entries', 10);
-		return $query->result();
+		return $this->db->select('tst.Name, Phone, Address, ID_TST')
+					->join('Org', 'Org.ID_Org = tst.ID_Org')
+					->where('Org.ID_Org', $this->session->userdata('ID_Org'))->get('tst');
 	}
-
-	public function insert_entry()
+	
+		public function get_true_org($id)
 	{
-		$this->title    = $_POST['title']; // please read the below note
-		$this->content  = $_POST['content'];
-		$this->date     = time();
-
-		$this->db->insert('entries', $this);
+		return $this->db->join('Org', 'Org.ID_Org = tst.ID_Org')
+					->where('Org.ID_Org', $this->session->userdata('ID_Org'))
+					->where('ID_TST', $id)
+					->count_all_results('tst');
 	}
-
-	public function update_entry()
+	
+	public function get_tst_id_select()
 	{
-		$this->title    = $_POST['title'];
-		$this->content  = $_POST['content'];
-		$this->date     = time();
+		$query = $this->db->select('ID_TST, tst.Name')
+					->join('tst', 'tst.ID_Org = org.ID_Org')
+					->where('org.ID_Org', $this->session->userdata('ID_Org'))
+					->get('org');
+					
+		foreach ($query->result() as $row) {
+			$data[$row->ID_TST] = $row->Name;
+		}
 
-		$this->db->update('entries', $this, array('id' => $_POST['id']));
+		return $data;
 	}
-
+	
+	public function delete($id)
+	{
+		return 	$this->db->delete('tst', ['ID_TST' => $id]);
+	}
+	
 }
