@@ -11,7 +11,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title><?PHP echo $title; ?></title>
+	<title>{title}</title>
 	
 	<?PHP $this->loadlib->show_css(); ?>
 
@@ -44,7 +44,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <body>
 
 <div id="wrapper">
-	<?PHP if ($Page != 'auth/index' && $Page != 'reg/index'):?>
 	<!-- Navigation -->
 	<nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
 		<div class="navbar-header">
@@ -83,7 +82,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<div id="page-wrapper">
 		<div class="row">
 			<div class="col-lg-12">
-				<h1 class="page-header"><?PHP echo $title; ?></h1>
+				<h1 class="page-header">{title}</h1>
 			</div>
 			<!-- /.col-lg-12 -->
 		</div>
@@ -92,22 +91,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 				<?PHP echo $this->msg->show(); ?>
 			</div>
 		</div>
-		<?PHP $this->load->view($Page); ?>
+		{Page}
 	</div>
-	<?PHP else: ?>
-	<div class="container">
-		<div class="row">
-			<div class="col-md-4 col-md-offset-4">
-				<div class="login-panel panel panel-default">
-					<div class="panel-heading">
-						<h3 class="panel-title"><?PHP echo $title; ?></h3>
-					</div>
-					<?PHP $this->load->view($Page); ?>
-				</div>
-			</div>
-		</div>
-	</div>
-	<?PHP endif; ?>
 <!-- /#wrapper -->
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <strong>{memory_usage}</strong> mem. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
 

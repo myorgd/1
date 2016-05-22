@@ -29,8 +29,7 @@ class Nas extends CI_Controller {
 
 	public function index()
 	{
-		$data['Page'] = 'nas/index';
-		$data['title'] = 'Список устройств';
+
 		$this->load->library('table');
 
 		$this->table->set_template(['table_open'  => '<table class="table table-striped table-bordered table-hover">']);
@@ -40,10 +39,16 @@ class Nas extends CI_Controller {
 		{
 				$this->table->add_row([$row->nasname, $row->shortname, $row->secret, '<center><a href="'.base_url().'nas/delete/'.$row->id.'" class="btn btn-danger btn-circle"><i class="fa fa-times"></i></a></center>']);
 		}
+
+		$data = [
+			'Page' 	=> $this->parser->parse('nas/index', 
+				[
+					'table' => $this->table->generate()
+				], TRUE),
+			'title' => 'Список устройств'
+		];
 		
-		$data['table'] = $this->table->generate();
-		
-		$this->load->view('main', $data);
+		$this->parser->parse('main', $data);
 	}
 	
 	public function delete($id)
@@ -59,10 +64,7 @@ class Nas extends CI_Controller {
 		$this->load->helper('string');
 		$this->load->model('tst_model', 'tst');
 		$this->load->model('routers_model', 'routers');
-		
-		$data['Page'] = 'nas/add';
-		$data['title'] = 'Добавить оборудование';
-		
+				
 		$this->form_validation->set_rules('tst', 'ТСТ', 'required');
 		$this->form_validation->set_rules('nasname', 'имя оборудования', 'required');
 		if ($this->form_validation->run())
@@ -76,7 +78,19 @@ class Nas extends CI_Controller {
 			
 			redirect('/nas');
 		}
+																
+		$data = [
+			'Page' 	=> $this->parser->parse('nas/add', [
+					'form_Open' 	=> form_open('nas/add', 'role="form" id="myform"').'<fieldset>',
+					'tst' 			=> form_dropdown_new('tst', $this->tst->get_tst_id_select(), set_value('tst')),
+					'nasname' 		=> form_input_new('nasname', 'имя оборудования', 'text', false, false, set_value('nasname')),
+					'form_close' 	=> form_close(),
+					'form_submit'	=> form_submit('myform', 'Добавить', 'class="btn btn-lg btn-success btn-block"')
+			], TRUE),
+			'title' => 'Добавить оборудование'
+		];
 		
-		$this->load->view('main', $data);
+		$this->parser->parse('main', $data);
+		
 	}
 }

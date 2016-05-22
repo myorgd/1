@@ -49,9 +49,17 @@ class Auth extends CI_Controller {
 				$this->msg->add('Попробуйте еще раз через 5 минут.', 0);
 			}
 		}
-
-		$data['Page'] = 'auth/index';
-		$data['title'] = 'Авторизация';
-		$this->load->view('main', $data);
+		
+		$data = [
+			'form_Open' 	=> form_open('auth', 'role="form" id="myform"').'<fieldset>',
+			'email' 			=> form_input_new('email', 'E-mail', 'email', false, false, '', 'autofocus'),
+			'password' 		=> form_input_new('password', 'Password', 'password', false, false),
+			'remember' 		=> form_checkbox('remember', 'Remember Me'),
+			'form_close' 	=> form_close(),
+			'form_submit'	=> form_submit('myform', 'Вход', 'class="btn btn-lg btn-success btn-block"'),
+			'title' => 'Авторизация'
+		];
+		
+		$this->parser->parse('auth/index', $data);
 	}
 }

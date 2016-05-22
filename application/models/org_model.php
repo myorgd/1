@@ -14,7 +14,7 @@ class Org_model extends CI_Model {
 		
 	public function edit()
 	{			
-			return $this->db->where('ID_Org', $this->session->userdata('ID_Org'))->update('org', ['Name' => $this->input->post('Org_Name')]);
+			return $this->db->where('ID_Org', $this->session->userdata('ID_Org'))->update('org', ['Name' => $this->input->post('orgname')]);
 	}
 	
 	public function add()
@@ -24,6 +24,11 @@ class Org_model extends CI_Model {
 			'Name' => $this->input->post('Org_Name')
 		];
 			return ($this->db->insert('org', $data)) ? $this->db->insert_id() : false ;
+	}
+	
+	public function get_all()
+	{
+		return $this->db->select('Name')->where('Org.ID_Users', $this->session->userdata('ID'))->get('org');
 	}
 
 }

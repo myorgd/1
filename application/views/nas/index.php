@@ -7,7 +7,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                         <!-- /.panel-heading -->
                         <div class="panel-body">
                             <div class="table-responsive">
-                                <?PHP echo $table; ?>
+                                {table}
                             </div>
                             <!-- /.table-responsive -->
                         </div>

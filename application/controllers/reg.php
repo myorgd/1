@@ -81,11 +81,19 @@ class Reg extends CI_Controller {
 						'ip_address'    => $this->input->ip_address(),
 						'word'          => $cap['word']
 				]);
-
-		$data['image'] = $cap['image'];
-		$data['Page'] = 'reg/index';
-		$data['title'] = 'Регистрация';
-		$this->load->view('main', $data);
+		
+		$data = [
+			'form_Open' 	=> form_open('reg', 'role="form" id="myform"').'<fieldset>',
+			'email' 		=> form_input_new('email', 'E-mail', 'email', false, false, '', 'autofocus'),
+			'phone' 		=> form_input_new('phone', 'Номер телефона', 'text', false, false),
+			'rules' 		=> form_dropdown_new('rules', $this->users->get_rules_id_select(), 'Клиент'),
+			'captcha' 		=> form_input_new('captcha', 'Код', 'text', false, $cap['image']),
+			'form_close' 	=> form_close(),
+			'form_submit'	=> form_submit('myform', 'Регистрация', 'class="btn btn-lg btn-success btn-block"'),
+			'title' => 'Регистрация'
+		];
+		
+		$this->parser->parse('reg/index', $data);
 	}
 	
 }

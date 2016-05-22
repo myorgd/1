@@ -29,8 +29,6 @@ class Tst extends CI_Controller {
 
 	public function index()
 	{
-		$data['Page'] = 'tst/index';
-		$data['title'] = 'Список ТСТ';
 		$this->load->library('table');
 
 		$this->table->set_template(['table_open'  => '<table class="table table-striped table-bordered table-hover">']);
@@ -41,9 +39,15 @@ class Tst extends CI_Controller {
 				$this->table->add_row([$row->Name, $row->Address, $row->Phone, '<center><a href="'.base_url().'tst/delete/'.$row->ID_TST.'" class="btn btn-danger btn-circle"><i class="fa fa-times"></i></a></center>']);
 		}
 		
-		$data['table'] = $this->table->generate();
+		$data = [
+			'Page' 	=> $this->parser->parse('tst/index', 
+				[
+					'table' => $this->table->generate()
+				], TRUE),
+			'title' => 'Список ТСТ'
+		];
 		
-		$this->load->view('main', $data);
+		$this->parser->parse('main', $data);
 	}
 	
 	public function delete($id)
@@ -56,28 +60,29 @@ class Tst extends CI_Controller {
 	
 	public function add()
 	{
-		$this->load->helper('string');
-
-		$data['Page'] = 'tst/add';
-			
-		$this->form_validation->set_rules('orgname', 'название организации', 'required');
+		
+		$this->form_validation->set_rules('name', 'Название ТСТ', 'required');
+		$this->form_validation->set_rules('address', 'Адрес', 'required');
+		$this->form_validation->set_rules('phone', 'Контактный номер телефона', 'required');
 
 		if ($this->form_validation->run())
 		{
-
-				$ID = $this->org->add();
-				
-				if ($ID != false)
-				{
-					$this->session->set_userdata('ID_Org', $ID);
-					redirect('/tst');		
-				} else {
-					$this->msg->add('Ошибка попробуйте еще раз', 0);
-				}
+				$this->tst->add();	
+				redirect('/tst');
 		}
-			
 		
-		$data['title'] = 'Добавить компанию';
-		$this->load->view('main', $data);
+		$data = [
+			'Page' 	=> $this->parser->parse('tst/add', [
+					'form_Open' 	=> form_open('tst/add', 'role="form" id="myform"').'<fieldset>',
+					'name' 			=> form_input_new('name', 'Название ТСТ', 'text', false, false, set_value('name')),
+					'address' 		=> form_input_new('address', 'Адрес', 'text', false, false, set_value('address')),
+					'phone' 		=> form_input_new('phone', 'Контактный номер телефона', 'text', false, false, set_value('phone')),
+					'form_close' 	=> form_close(),
+					'form_submit'	=> form_submit('myform', 'Добавить', 'class="btn btn-lg btn-success btn-block"')
+			], TRUE),
+			'title' => 'Добавить компанию'
+		];
+		
+		$this->parser->parse('main', $data);
 	}
 }

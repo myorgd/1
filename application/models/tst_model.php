@@ -20,7 +20,7 @@ class Tst_model extends CI_Model {
 					->where('Org.ID_Org', $this->session->userdata('ID_Org'))->get('tst');
 	}
 	
-		public function get_true_org($id)
+	public function get_true_org($id)
 	{
 		return $this->db->join('Org', 'Org.ID_Org = tst.ID_Org')
 					->where('Org.ID_Org', $this->session->userdata('ID_Org'))
@@ -34,12 +34,16 @@ class Tst_model extends CI_Model {
 					->join('tst', 'tst.ID_Org = org.ID_Org')
 					->where('org.ID_Org', $this->session->userdata('ID_Org'))
 					->get('org');
-					
-		foreach ($query->result() as $row) {
-			$data[$row->ID_TST] = $row->Name;
-		}
+		if ($query->num_rows() > 0)		
+		{
+			foreach ($query->result() as $row) {
+				$data[$row->ID_TST] = $row->Name;
+			}
 
-		return $data;
+			return $data;
+		} else {
+			return '';
+		}
 	}
 	
 	public function delete($id)
@@ -47,4 +51,14 @@ class Tst_model extends CI_Model {
 		return 	$this->db->delete('tst', ['ID_TST' => $id]);
 	}
 	
+	public function add()
+	{	
+		$data = [
+			'ID_Org' 	=> $this->session->userdata('ID_Org'),
+			'Name' 		=> $this->input->post('name'),
+			'Address'	=> $this->input->post('address'),
+			'Phone' 	=> $this->input->post('phone')
+		];
+			return $this->db->insert('tst', $data);
+	}
 }

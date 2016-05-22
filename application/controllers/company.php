@@ -23,24 +23,35 @@ class Company extends CI_Controller {
 	{
 		parent::__construct();
 		// Your own constructor code
-		$this->load->model('access_url_model');
+		//$this->load->model('access_url_model');
 		$this->load->model('org_model', 'org');
 		$this->load->model('users_model', 'users');
 	}
 
 	public function index()
 	{
-
-		$data['Page'] = 'company/index';
-		$data['title'] = 'Информация об компании';
-		$this->load->view('main', $data);
+		$data = [
+			'Page' 	=> $this->parser->parse('company/index', 
+				[
+					'org' => $this->org->get_all()->result_array() 
+				], TRUE),
+			'title' => 'Информация о компании'
+		];
+		
+		$this->parser->parse('main', $data);
 	}
 	
 	public function add()
 	{
 		if ($this->session->userdata('Add_Org') && $this->session->userdata('ID_Org') == null)
 		{
-			$data['Page'] = 'company/add';
+			$data['Page'] = $this->parser->parse('company/add', 
+			 [
+					'form_Open' 	=> form_open('company/add', 'role="form" id="myform"').'<fieldset>',
+					'orgname' 		=> form_input_new('orgname', 'Название компании', 'text', false, false, set_value('orgname')),
+					'form_close' 	=> form_close(),
+					'form_submit'	=> form_submit('myform', 'Добавить', 'class="btn btn-lg btn-success btn-block"')
+			], TRUE);
 			
 			$this->form_validation->set_rules('orgname', 'название организации', 'required');
 
@@ -59,30 +70,36 @@ class Company extends CI_Controller {
 			}
 			
 		} else {
-			$data['Page'] = 'source';
+			$data['Page'] = $this->load->view('source', '', true);
 			$this->msg->add('Вам запрещено это действие', 0);
 		}
 		
 		$data['title'] = 'Добавить компанию';
-		$this->load->view('main', $data);
+		$this->parser->parse('main', $data);
 	}
 	
 	public function edit()
 	{
 		if ($this->session->userdata('ID_Org') != null)
-		{
-			$data['Page'] = 'company/edit';
-			
+		{			
 			$this->form_validation->set_rules('orgname', 'название организации', 'required');
 
 			if ($this->form_validation->run())
 			{
 				$this->org->edit();
-			} else {
-				$query = $this->db->select('Name')->get_where('org', ['ID_Users' => $this->session->userdata('ID')]);
-				$row = $query->row();
-				$data['Name'] = $row->Name;
+				redirect('/company');	
 			}
+			
+			$query = $this->db->select('Name')->get_where('org', ['ID_Users' => $this->session->userdata('ID')]);
+			$row = $query->row();
+						
+			$data['Page'] = $this->parser->parse('company/edit', 
+			 [
+					'form_Open' 	=> form_open('company/edit', 'role="form" id="myform"').'<fieldset>',
+					'orgname' 		=> form_input_new('orgname', 'Название компании', 'text', false, false, set_value('orgname', $row->Name)),
+					'form_close' 	=> form_close(),
+					'form_submit'	=> form_submit('myform', 'Изменить', 'class="btn btn-lg btn-success btn-block"')
+			], TRUE);
 			
 		} else {
 			$data['Page'] = 'source';
@@ -90,6 +107,6 @@ class Company extends CI_Controller {
 		}
 		
 		$data['title'] = 'Редактирование информация о компании';
-		$this->load->view('main', $data);
+		$this->parser->parse('main', $data);
 	}
 }
