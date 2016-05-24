@@ -157,3 +157,34 @@ function form_dropdown_new($data = '', $options = array(), $selected = array(), 
 
 	return '<div class="form-group">'.$form."</select>\n</div>";
 }
+
+	function form_checkbox_new($data = '', $value = '', $checked = FALSE, $extra = '')
+	{
+		$defaults = array('type' => 'checkbox', 'name' => ( ! is_array($data) ? $data : ''));
+
+		if (is_array($data) && array_key_exists('checked', $data))
+		{
+			$checked = $data['checked'];
+
+			if ($checked == FALSE)
+			{
+				unset($data['checked']);
+			}
+			else
+			{
+				$data['checked'] = 'checked';
+			}
+		}
+
+		if ($checked == TRUE)
+		{
+			$defaults['checked'] = 'checked';
+		}
+		else
+		{
+			unset($defaults['checked']);
+		}
+
+		return '<div class="checkbox"><label><input '._parse_form_attributes($data, $defaults)._attributes_to_string($extra)." />".$value."</label></div>\n";
+	}
+
