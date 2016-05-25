@@ -69,6 +69,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</form>
 						</div>
 					</div>
+					<div class="row">
+						<div class="col-lg-12">
+								{SC}
+						</div>
+					</div>
 				</div>
 				</div>
 			</div>

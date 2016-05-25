@@ -28,61 +28,55 @@ class Wifi extends CI_Controller {
 
 	public function index()
 	{
-		$data['Page'] = 'wifi/auth';
-		$data['title'] = 'Авторизация для доступа в интернет';
+		$this->load->library('ulogin', [
+			'type' 		=> 'panel',
+			'fields'	=> ['first_name', 'last_name', 'email'],
+			'providers'	=> ['vkontakte', 'odnoklassniki', 'mailru', 'facebook'],
+			'hidden'	=> ['other'],
+			'url' 		=> base_url().'wifi/sc'
+		]);
 
 		$Data = $this->input->get(['res','uamip','uamport','challenge','called','mac','ip','nasid','sessionid','userurl','md']);
-                  	          	    $this->session->set_userdata(['mac' => $Data['mac'],
-							        	      'uamip' => $Data['uamip'],
-							        	      'uamport' => $Data['uamport'],
-        	    							  'challenge' => $Data['challenge'],
-        	    							  'nasid' => $Data['nasid'],
-        	    							  'userurl' => $Data['userurl']]);
+
         if ($Data != false && $Data['mac'] != $this->session->userdata('mac'))
         {
-        	if ($this->devices->get_id_mac($Data['mac']) == false)
-        	{ /*
-				$this->session->set_userdata([
-				'mac' => $this->devices->insert_device(['MAC' => $Data['mac'], 'ID_Routers' => $Data['nasid']], true),
-				'nasid' => $Data['nasid']]);
-        	  */
-        	          	    $this->session->set_userdata(['mac' => $Data['mac'],
-							        	      'uamip' => $Data['uamip'],
-							        	      'uamport' => $Data['uamport'],
-        	    							  'challenge' => $Data['challenge'],
-        	    							  'nasid' => $Data['nasid'],
-        	    							  'userurl' => $Data['userurl']]);
-        	}
-        	 else
-        	{
-        	    $this->session->set_userdata(['mac' => $Data['mac'],
-							        	      'uamip' => $Data['uamip'],
-							        	      'uamport' => $Data['uamport'],
-        	    							  'challenge' => $Data['challenge'],
-        	    							  'nasid' => $Data['nasid'],
-        	    							  'userurl' => $Data['userurl']]);
-        	}
-        }
+        	$id = $this->devices->get_id_mac($Data['mac']);
+
+        	if ($id == false)
+				$this->devices->insert_device(['MAC' => $Data['mac'], 'ID_Routers' => $Data['nasid']]);
+
+       	    $this->session->set_userdata(['mac' 		=> $Data['mac'],
+							        	  'uamip' 		=> $Data['uamip'],
+							        	  'uamport' 	=> $Data['uamport'],
+        	    						  'challenge' 	=> $Data['challenge'],
+        	    						  'nasid' 		=> $Data['nasid'],
+        	    						  'userurl' 	=> $Data['userurl']]);
+       }
 
         $data = [
-			'form_Open' 	=> form_open('http://192.168.2.105/wifi/wifi/access', 'role="form" id="myform"').'<fieldset>',
-			'email' 		=> form_input_new('email', 'E-mail', 'text', false, false, '', 'autofocus'),
-			'password' 		=> form_input_new('password', 'Password', 'password', false, false),
+			'form_Open' 	=> form_open('wifi/access', 'role="form" id="myform"').'<fieldset>',
+			'email' 		=> form_input_new('phone', 'Номер телефона', 'text', false, false, '', 'autofocus'),
+			//'password' 		=> form_input_new('password', 'Password', 'password', false, false),
 			'remember' 		=> form_checkbox_new('remember', 'Согласие с правилами'),
 			'form_close' 	=> form_close(),
 			'form_submit'	=> form_submit('myform', 'Вход', 'class="btn btn-lg btn-success btn-block"'),
-			'title' => 'Авторизация'
+			'title' 		=> 'Авторизация',
+			'SC' 			=> $this->ulogin->get_html()
 		];
 
-		$this->parser->parse('auth/index', $data);
-		print_r($Data);
+		$this->parser->parse('wifi/index', $data);
+	}
+
+	public function sc()
+	{
+		$this->load->library('ulogin');
+		$this->ulogin->right_now();		print_r($this->ulogin->userdata());
 	}
 
 	public function access()
 	{
 		$uamsecret = 'secret';
 	    $hexchal = pack ("H32", $this->session->userdata('challenge'));
-	   // $newchal = $uamsecret ? pack("H*", md5($hexchal . $uamsecret)) : $hexchal;
 	    $newchal = pack("H*", md5($hexchal . $uamsecret));
 	    $response = md5("\0" . $this->input->post('password') . $newchal);
 
@@ -92,13 +86,7 @@ class Wifi extends CI_Controller {
             echo $pappassword;
 	    redirect('http://'.$this->session->userdata('uamip').':'.
 	    		 $this->session->userdata('uamport').'/logon?username='.
-	    		 $this->input->post('email').'&password='.$pappassword, 'refresh');
-
-	    		 /*
-	    print implode('', array(
-            '<meta http-equiv="refresh" content="0;url=',
-            'http://', $this->session->userdata('uamip'), ':', $this->session->userdata('uamport'), '/',
-            'logon?username=', $this->input->post('email'), '&password=', $pappassword, '&userurl='.$this->session->userdata('userurl').'">'
-        ));        */
+	    		 $this->input->post('email').'&password='.$pappassword.
+	    		 '&userurl='.$this->session->userdata('userurl'), 'refresh');
 	}
 }

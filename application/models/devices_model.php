@@ -18,17 +18,9 @@ class Devices_model extends CI_Model {
 		return $query->result();
 	}
 
-	public function insert_device($Data, $OutId = false)
-	{		 if ($this->db->insert('devices', $Data))
-		 {
-			 if($OutId)
-			 {
-			 	return $this->get_id_mac($mac);			 }
-			 return true;
-		 }
-		 else
-		 {
-			return false;		 }
+	public function insert_device($Data)
+	{
+		return ($this->db->insert('devices', $Data)) ? $this->db->insert_id() : false ;
 	}
 
 	public function get_id_mac($mac = '')
@@ -40,24 +32,6 @@ class Devices_model extends CI_Model {
 		{			return $row->ID_Devices;
 		}
 		return false;
-	}
-
-	public function insert_entry()
-	{
-		$this->title    = $_POST['title']; // please read the below note
-		$this->content  = $_POST['content'];
-		$this->date     = time();
-
-		$this->db->insert('entries', $this);
-	}
-
-	public function update_entry()
-	{
-		$this->title    = $_POST['title'];
-		$this->content  = $_POST['content'];
-		$this->date     = time();
-
-		$this->db->update('entries', $this, array('id' => $_POST['id']));
 	}
 
 }

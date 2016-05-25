@@ -8,12 +8,12 @@ class Radnas_model extends CI_Model {
 		// Call the CI_Model constructor
 		parent::__construct();
 	}
-	
+
 	public function get_id($NAS_Name)
 	{
-		return $this->db->get_where('nas', ['nasname' => $NAS_Name.'_'.$this->session->userdata('ID_Org')]);
+		return $this->db->get_where('nas', ['nasname' => $NAS_Name]);
 	}
-	
+
 	public function get_all()
 	{
 		return $this->db->select('nas.id, nasname, shortname, secret')
@@ -22,7 +22,7 @@ class Radnas_model extends CI_Model {
 					->join('nas', 'nas.id = routers.ID_Routers')
 					->where('Org.ID_Org', $this->session->userdata('ID_Org'))->get('Org');
 	}
-	
+
 	public function get_true_org($id)
 	{
 		return $this->db->join('tst', 'tst.ID_Org = Org.ID_Org')
@@ -32,19 +32,20 @@ class Radnas_model extends CI_Model {
 					->where('nas.id', $id)
 					->count_all_results('Org');
 	}
-	
+
 	public function delete($id)
 	{
 		return 	$this->db->delete('nas', ['id' => $id]);
 	}
-		
+
 	public function add($Name)
 	{
-			
+
 			$data = [
 					'nasname' => $Name,
 					'shortname' => $this->input->post('nasname'),
-					'secret' => random_string('alnum', 7)
+					'secret' => random_string('alnum', 7),
+					'description' =>
 			];
 
 			return ($this->db->insert('nas', $data)) ? $this->db->insert_id() : false ;
