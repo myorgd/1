@@ -70,7 +70,8 @@ class Wifi extends CI_Controller {
 	public function sc()
 	{
 		$this->load->library('ulogin');
-		$this->ulogin->right_now();		print_r($this->ulogin->userdata());
+		$this->ulogin->right_now();
+		print_r($this->ulogin->userdata());
 	}
 
 	public function access()
@@ -87,6 +88,6 @@ class Wifi extends CI_Controller {
 	    redirect('http://'.$this->session->userdata('uamip').':'.
 	    		 $this->session->userdata('uamport').'/logon?username='.
 	    		 $this->input->post('email').'&password='.$pappassword.
-	    		 '&userurl='.$this->session->userdata('userurl'), 'refresh');
+	    		 '&userurl='.base_url().'wifi/news', 'refresh');
 	}
 }

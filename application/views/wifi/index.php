@@ -58,21 +58,42 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 						</div>
 					</div>
 					<div class="row">
-						<div class="col-lg-12">
-								{form_Open}
-								{email}
-								{password}
-								{remember}
-								{form_close}
-								{form_submit}
-						</fieldset>
-						</form>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-lg-12">
-								{SC}
-						</div>
+						<div class="panel-group" id="accordion">
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" class="collapsed">По SMS</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseOne" class="panel-collapse collapse" aria-expanded="false" style="height: 0px;">
+                                        <div class="panel-body">
+											<div class="col-lg-12">
+													{form_Open}
+													{email}
+													{remember}
+													{form_close}
+													{form_submit}
+											</fieldset>
+											</form>
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="panel panel-default">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" class="collapsed" aria-expanded="false">Через социальные сети</a>
+                                        </h4>
+                                    </div>
+                                    <div id="collapseTwo" class="panel-collapse collapse" aria-expanded="false">
+                                        <div class="panel-body">
+											<div class="col-lg-12 text-center">
+													{SC}
+											</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 					</div>
 				</div>
 				</div>

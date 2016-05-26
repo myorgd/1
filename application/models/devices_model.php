@@ -12,12 +12,6 @@ class Devices_model extends CI_Model {
 		parent::__construct();
 	}
 
-	public function get_last_ten_entries()
-	{
-		$query = $this->db->get('entries', 10);
-		return $query->result();
-	}
-
 	public function insert_device($Data)
 	{
 		return ($this->db->insert('devices', $Data)) ? $this->db->insert_id() : false ;
@@ -29,7 +23,8 @@ class Devices_model extends CI_Model {
 		$row = $query->row();
 
 		if (isset($row))
-		{			return $row->ID_Devices;
+		{
+			return $row->ID_Devices;
 		}
 		return false;
 	}
