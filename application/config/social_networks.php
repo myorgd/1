@@ -36,3 +36,11 @@ $config['ok'] = ['APP_ID'			=> 1247133440,
 				 'URL_ACCESS_TOKEN' => 'http://api.odnoklassniki.ru/fb.do',
 				 'URL_GET_TOKEN' 	=> 'http://api.odnoklassniki.ru/oauth/token.do'
 				 ];
+
+$config['ig'] = ['CLIENT_ID'		=> 'f9a35fb150984c5788435b317a02c12d',
+				 'CLIENT_SECRET' 	=> 'b8d6bf1a35214ebebe5b6e7f9fd5c2fe',
+				 'REDIRECT_URI' 	=> 'http://localhost/wifi/wifi/instagram',
+				 'URL_AUTHORIZE' 	=> 'https://api.instagram.com/oauth/authorize/',
+				 'URL_ACCESS_TOKEN' => 'https://api.instagram.com/oauth/access_token',
+				 'URL_GET_PROFILES' => 'https://api.instagram.com/v1/users/'
+				 ];

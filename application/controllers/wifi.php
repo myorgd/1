@@ -127,10 +127,38 @@ class Wifi extends CI_Controller {
 			*/
 		}
 	}
+	
+	public function instagram ()
+	{
+		$this->load->library('instagram');
+
+		if (!empty($this->input->get('error'))) {
+			// Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
+			die($this->input->get('error'));
+		} elseif (empty($this->input->get('code'))) {
+			// Самый первый запрос
+			$this->instagram->goToAuth();
+		} else {
+			// Пришёл ответ без ошибок после запроса авторизации
+
+			if (!$this->instagram->getToken($this->input->get('code'))) {
+				die('Error - no token by code');
+			}
+
+			$user = $this->instagram->getUser();
+			print_r($user);
+			/*
+			* Вот и всё - мы узнали основные данные авторизованного юзера.
+			* $user в этом примере состоит из двух полей: id, name.
+			* Делайте с ними что угодно - регистрируйте, авторизуйте, ругайте...
+			*/
+		}
+	}
 
 	public function twitter ()
 	{
-			$this->load->library('twitter');			// Пример использования класса:
+			$this->load->library('twitter');
+			// Пример использования класса:
 			if (!empty($this->input->get('denied'))) {
 			    // Пользователь отменил авторизацию.
 			    die('denied');
@@ -160,7 +188,8 @@ class Wifi extends CI_Controller {
 
 	public function odnoklassniki ()
 	{
-		$this->load->library('odnoklassniki');				// Пример использования класса:
+		$this->load->library('odnoklassniki');
+				// Пример использования класса:
 		if (!empty($this->input->get('error'))) {
 		    // Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
 		    die($this->input->get('error'));
