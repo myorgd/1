@@ -28,14 +28,6 @@ class Wifi extends CI_Controller {
 
 	public function index()
 	{
-		$this->load->library('ulogin', [
-			'type' 		=> 'panel',
-			'fields'	=> ['first_name', 'last_name', 'email'],
-			'providers'	=> ['vkontakte', 'odnoklassniki', 'mailru', 'facebook'],
-			'hidden'	=> ['other'],
-			'url' 		=> base_url().'wifi/sc'
-		]);
-
 		$Data = $this->input->get(['res','uamip','uamport','challenge','called','mac','ip','nasid','sessionid','userurl','md']);
 
         if ($Data != false && $Data['mac'] != $this->session->userdata('mac'))
@@ -52,8 +44,12 @@ class Wifi extends CI_Controller {
         	    						  'nasid' 		=> $Data['nasid'],
         	    						  'userurl' 	=> $Data['userurl']]);
        }
-
-        $data = [
+	   
+	   $this->loadlib->add_css("/bower_components/bootstrap-social/bootstrap-social.css");
+	   
+	   $base_url = base_url().'wifi/';
+	   
+       $data = [
 			'form_Open' 	=> form_open('wifi/access', 'role="form" id="myform"').'<fieldset>',
 			'email' 		=> form_input_new('phone', 'Номер телефона', 'text', false, false, '', 'autofocus'),
 			//'password' 		=> form_input_new('password', 'Password', 'password', false, false),
@@ -61,7 +57,11 @@ class Wifi extends CI_Controller {
 			'form_close' 	=> form_close(),
 			'form_submit'	=> form_submit('myform', 'Вход', 'class="btn btn-lg btn-success btn-block"'),
 			'title' 		=> 'Авторизация',
-			'SC' 			=> $this->ulogin->get_html()
+			'SC'			=> [['name' => 'vk', 'link' => $base_url.'vk'],
+								['name' => 'facebook', 'link' => $base_url.'facebook'],
+								['name' => 'odnoklassniki', 'link' => $base_url.'odnoklassniki'],
+								['name' => 'twitter', 'link' => $base_url.'twitter'],
+								['name' => 'instagram', 'link' => $base_url.'instagram']]
 		];
 
 		$this->parser->parse('wifi/index', $data);
@@ -72,6 +72,67 @@ class Wifi extends CI_Controller {
 		$this->load->library('ulogin');
 		$this->ulogin->right_now();
 		print_r($this->ulogin->userdata());
+	}
+	
+	public function vk()
+	{
+		$this->load->library('vk');
+		
+		// Пример использования класса:
+		if (!empty($this->input->get('error'))) {
+			// Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
+		} elseif (empty($this->input->get('code'))) {
+			// Самый первый запрос
+			$this->vk->goToAuth();
+		} else {
+			// Пришёл ответ без ошибок после запроса авторизации
+			if (!$this->vk->getToken($this->input->get('code'))) {
+				die('Error - no token by code');
+			}
+			/*
+			* На данном этапе можно проверить зарегистрирован ли у вас ВК-юзер с id = OAuthVK::$userId
+			* Если да, то можно просто авторизовать его и не запрашивать его данные.
+			*/
+
+			$user = $this->vk->getUser();
+			print_r($user);
+			/*
+			* Вот и всё - мы узнали основные данные авторизованного юзера.
+			* $user в этом примере состоит из трёх полей: uid, first_name, last_name.
+			* Делайте с ними что угодно - регистрируйте, авторизуйте, ругайте...
+			*/
+		}
+	}
+	
+	public function facebook ()
+	{
+		$this->load->library('fb');
+		
+		if (!empty($this->input->get('error'))) {
+			// Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
+			die($this->input->get('error'));
+		} elseif (empty($this->input->get('code'))) {
+			// Самый первый запрос
+			$this->fb->goToAuth();
+		} else {
+			// Пришёл ответ без ошибок после запроса авторизации
+
+			if (!$this->fb->checkState($this->input->get('state'))) {
+				die("The state does not match. You may be a victim of CSRF.");
+			}
+
+			if (!$this->fb->getToken($this->input->get('code'))) {
+				die('Error - no token by code');
+			}
+
+			$user = $this->fb->getUser();
+			print_r($user);
+			/*
+			* Вот и всё - мы узнали основные данные авторизованного юзера.
+			* $user в этом примере состоит из двух полей: id, name.
+			* Делайте с ними что угодно - регистрируйте, авторизуйте, ругайте...
+			*/
+		}
 	}
 
 	public function access()

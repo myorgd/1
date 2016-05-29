@@ -15,12 +15,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 	<?PHP $this->loadlib->show_css(); ?>
 
-	<!-- Timeline CSS -->
-	<link href="<?PHP echo base_url(); ?>/dist/css/timeline.css" rel="stylesheet">
-
-	<!-- Morris Charts CSS -->
-	<link href="<?PHP echo base_url(); ?>/bower_components/morrisjs/morris.css" rel="stylesheet">
-
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 	<!--[if lt IE 9]>
@@ -88,7 +82,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
                                     <div id="collapseTwo" class="panel-collapse collapse" aria-expanded="false">
                                         <div class="panel-body">
 											<div class="col-lg-12 text-center">
-													{SC}
+												{SC}
+													<a href="{link}" class="btn btn-social-icon btn-{name}">
+														<span class="fa fa-{name}"></span>
+													</a>
+												{/SC}
 											</div>
                                         </div>
                                     </div>
@@ -104,11 +102,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<p class="footer">Page rendered in <strong>{elapsed_time}</strong> seconds. <strong>{memory_usage}</strong> mem. <?php echo  (ENVIRONMENT === 'development') ?  'CodeIgniter Version <strong>' . CI_VERSION . '</strong>' : '' ?></p>
 
 <?PHP $this->loadlib->show_js(); ?>
-
-<!-- Morris Charts JavaScript -->
-<script src="<?PHP echo base_url(); ?>/bower_components/raphael/raphael-min.js"></script>
-<script src="<?PHP echo base_url(); ?>/bower_components/morrisjs/morris.min.js"></script>
-<script src="<?PHP echo base_url(); ?>/js/morris-data.js"></script>
 
 </body>
 

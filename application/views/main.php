@@ -16,10 +16,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<?PHP $this->loadlib->show_css(); ?>
 
 	<!-- Timeline CSS -->
-	<link href="<?PHP echo base_url(); ?>/dist/css/timeline.css" rel="stylesheet">
+	<link href="<?PHP echo base_url(); ?>dist/css/timeline.css" rel="stylesheet">
 
 	<!-- Morris Charts CSS -->
-	<link href="<?PHP echo base_url(); ?>/bower_components/morrisjs/morris.css" rel="stylesheet">
+	<link href="<?PHP echo base_url(); ?>bower_components/morrisjs/morris.css" rel="stylesheet">
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -99,9 +99,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <?PHP $this->loadlib->show_js(); ?>
 
 <!-- Morris Charts JavaScript -->
-<script src="<?PHP echo base_url(); ?>/bower_components/raphael/raphael-min.js"></script>
-<script src="<?PHP echo base_url(); ?>/bower_components/morrisjs/morris.min.js"></script>
-<script src="<?PHP echo base_url(); ?>/js/morris-data.js"></script>
+<script src="<?PHP echo base_url(); ?>bower_components/raphael/raphael-min.js"></script>
+<script src="<?PHP echo base_url(); ?>bower_components/morrisjs/morris.min.js"></script>
+<script src="<?PHP echo base_url(); ?>js/morris-data.js"></script>
 
 </body>
 
