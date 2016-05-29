@@ -51,12 +51,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  */
 class Fb {
 
-    protected $APP_ID = 1801137726772847; //ID приложения
-    protected $APP_SECRET = 'd2cd5c15fa1f97b785096c34fdcfada3'; //Защищенный ключ
-    protected $URL_CALLBACK = 'http://localhost/wifi/wifi/facebook'; //URL сайта до этого скрипта-обработчика 
-    protected $URL_ACCESS_TOKEN = 'https://graph.facebook.com/oauth/access_token';
-    protected $URL_OATH = 'https://www.facebook.com/dialog/oauth';
-    protected $URL_GET_ME = 'https://graph.facebook.com/me';
+    protected $param;
 
     protected $token;
     public $userId;
@@ -64,29 +59,31 @@ class Fb {
 
 	function __construct($params=array()) {
 		$this->CI=& get_instance();
+		$this->CI->config->load('social_networks', true);
+      	$this->param = (object) $this->CI->config->item('fb', 'social_networks');
 	}
-	
+
     /**
      * @url https://vk.com/dev/auth_sites
      */
-     
+
     public function goToAuth()
     {
         $hash = md5(uniqid(rand(), TRUE));
         $this->CI->session->set_userdata(['state' => $hash]);
-        
-        redirect($this->URL_OATH .
-            '?client_id=' . sprintf('%.0f', $this->APP_ID) .
-            '&redirect_uri=' . urlencode($this->URL_CALLBACK) .
+
+        redirect($this->param->URL_OATH .
+            '?client_id=' . sprintf('%.0f', $this->param->APP_ID) .
+            '&redirect_uri=' . urlencode($this->param->URL_CALLBACK) .
             "&state=" . $hash, 'location', 301);
     }
 
     public function getToken($code) {
 
-        $url = $this->URL_ACCESS_TOKEN .
-            '?client_id=' . sprintf('%.0f', $this->APP_ID) .
-            '&redirect_uri=' . urlencode($this->URL_CALLBACK) .
-            '&client_secret=' . $this->APP_SECRET .
+        $url = $this->param->URL_ACCESS_TOKEN .
+            '?client_id=' . sprintf('%.0f', $this->param->APP_ID) .
+            '&redirect_uri=' . urlencode($this->param->URL_CALLBACK) .
+            '&client_secret=' . $this->param->APP_SECRET .
             '&code=' . $code;
 
         if (!($response = @file_get_contents($url))) {
@@ -110,7 +107,7 @@ class Fb {
             return false;
         }
 
-        $url = $this->URL_GET_ME . '?fields=age_range,id,name,birthday,email,gender,cover,link&access_token=' . $this->token;
+        $url = $this->param->URL_GET_ME . '?fields=age_range,id,name,birthday,email,gender,cover,link&access_token=' . $this->token;
 
         if (!($user = @file_get_contents($url))) {
             return false;

@@ -49,93 +49,99 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @author		EllisLab Dev Team
  * @link
  */
-class Vk {
-
+class Odnoklassniki {
+            /*
+	protected $APP_ID = 1247133440; //ID приложения
+    protected $APP_PUBLIC = 'CBAQLGFLEBABABABA'; //Публичный ключ
+    protected $APP_SECRET = 'F2DC27635A7161FD03025158'; //Защищенный ключ
+    protected $URL_CALLBACK = 'http://localhost/wifi/wifi/odnoklassniki'; //URL, на который произойдет перенаправление после авторизации
+    protected $URL_AUTHORIZE = 'http://www.odnoklassniki.ru/oauth/authorize';
+    protected $URL_GET_TOKEN = 'http://api.odnoklassniki.ru/oauth/token.do';
+    protected $URL_ACCESS_TOKEN = 'http://api.odnoklassniki.ru/fb.do';
+              */
     protected $param;
 
-    protected $token;
+    private $token;
     public $userId;
     public $userData;
 
-	function __construct() {
+	function __construct($params=array()) {
 		$this->CI=& get_instance();
 		$this->CI->config->load('social_networks', true);
-      	$this->param = (object) $this->CI->config->item('vk', 'social_networks');
+      	$this->param = (object) $this->CI->config->item('ok', 'social_networks');
 	}
 
-    private static function printError($error) {
-        echo '#' . $error->error_code . ' - ' . $error->error_msg;
-    }
-
     /**
-     * @url https://vk.com/dev/auth_sites
+     * @url http://apiok.ru/wiki/pages/viewpage.action?pageId=81822109
      */
     public function goToAuth()
     {
         redirect($this->param->URL_AUTHORIZE .
             '?client_id=' . $this->param->APP_ID .
-            '&scope=offline' .
-            '&redirect_uri=' . urlencode($this->param->URL_CALLBACK) .
-            '&response_type=code', 'location', 301);
+            '&response_type=code' .
+            '&redirect_uri=' . urlencode($this->param->URL_CALLBACK), 'location', 301);
     }
 
     public function getToken($code) {
-        $url = $this->param->URL_ACCESS_TOKEN .
-            '?client_id=' . $this->param->APP_ID .
-            '&client_secret=' . $this->param->APP_SECRET .
-            '&code=' . $code .
-            '&redirect_uri=' . urlencode($this->param->URL_CALLBACK);
 
-        if (!($res = @file_get_contents($url))) {
+        $data = [
+            'code' => trim($code),
+            'redirect_uri' => $this->param->URL_CALLBACK,
+            'client_id' => $this->param->APP_ID,
+            'client_secret' => $this->param->APP_SECRET,
+            'grant_type' => 'authorization_code'
+        ];
+
+        $opts = ['http' =>
+            [
+                'method'  => 'POST',
+                'header'  =>"Content-type: application/x-www-form-urlencoded\r\n".
+                    "Accept: */*\r\n",
+                'content' => http_build_query($data)
+            ]
+        ];
+
+        if (!($response = @file_get_contents($this->param->URL_GET_TOKEN, false, stream_context_create($opts)))) {
             return false;
         }
 
-        $res = json_decode($res);
-        if (empty($res->access_token) || empty($res->user_id)) {
+        $result = json_decode($response);
+        if (empty($result->access_token)) {
             return false;
         }
 
-        $this->token = $res->access_token;
-        $this->userId = $res->user_id;
+        $this->token = $result->access_token;
 
         return true;
     }
 
     /**
      * Если данных недостаточно, то посмотрите что можно ещё запросить по этой ссылке
-     * @url https://vk.com/pages.php?o=-1&p=getProfiles
+     * @url http://apiok.ru/wiki/display/api/users.getCurrentUser+ru
      */
     public function getUser() {
 
-        if (!$this->userId) {
+        if (!$this->token) {
             return false;
         }
 
-        $url = $this->param->URL_GET_PROFILES.
-            '?user_ids=' . $this->userId .
-			'&fields=sex,bdate,city,photo_100,nickname,email
-			&access_token=' . $this->token;
+        $url = $this->param->URL_ACCESS_TOKEN .
+            '?access_token=' . $this->token .
+            '&method=users.getCurrentUser' .
+            '&application_key=' . $this->param->APP_PUBLIC .
+            '&sig=' . md5('application_key=' . $this->param->APP_PUBLIC . 'method=users.getCurrentUser' . md5($this->token . $this->param->APP_SECRET));
 
-        if (!($res = @file_get_contents($url))) {
+        if (!($response = @file_get_contents($url))) {
             return false;
         }
 
-        $user = json_decode($res);
+        $user = json_decode($response);
 
-        if (!empty($user->error)) {
-            //$this->printError($user->error);
+        if (empty($user)) {
             return false;
         }
 
-        if (empty($user->response[0])) {
-            return false;
-        }
-
-        $user = $user->response[0];
-        if (empty($user->uid) || empty($user->first_name) || empty($user->last_name)) {
-            return false;
-        }
-
+        $this->userId = $user->uid;
         return $this->userData = $user;
     }
 }

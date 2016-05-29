@@ -44,11 +44,11 @@ class Wifi extends CI_Controller {
         	    						  'nasid' 		=> $Data['nasid'],
         	    						  'userurl' 	=> $Data['userurl']]);
        }
-	   
+
 	   $this->loadlib->add_css("/bower_components/bootstrap-social/bootstrap-social.css");
-	   
+
 	   $base_url = base_url().'wifi/';
-	   
+
        $data = [
 			'form_Open' 	=> form_open('wifi/access', 'role="form" id="myform"').'<fieldset>',
 			'email' 		=> form_input_new('phone', 'Номер телефона', 'text', false, false, '', 'autofocus'),
@@ -67,17 +67,10 @@ class Wifi extends CI_Controller {
 		$this->parser->parse('wifi/index', $data);
 	}
 
-	public function sc()
-	{
-		$this->load->library('ulogin');
-		$this->ulogin->right_now();
-		print_r($this->ulogin->userdata());
-	}
-	
 	public function vk()
 	{
 		$this->load->library('vk');
-		
+
 		// Пример использования класса:
 		if (!empty($this->input->get('error'))) {
 			// Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
@@ -103,11 +96,11 @@ class Wifi extends CI_Controller {
 			*/
 		}
 	}
-	
+
 	public function facebook ()
 	{
 		$this->load->library('fb');
-		
+
 		if (!empty($this->input->get('error'))) {
 			// Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
 			die($this->input->get('error'));
@@ -132,6 +125,63 @@ class Wifi extends CI_Controller {
 			* $user в этом примере состоит из двух полей: id, name.
 			* Делайте с ними что угодно - регистрируйте, авторизуйте, ругайте...
 			*/
+		}
+	}
+
+	public function twitter ()
+	{
+			$this->load->library('twitter');			// Пример использования класса:
+			if (!empty($this->input->get('denied'))) {
+			    // Пользователь отменил авторизацию.
+			    die('denied');
+			} elseif (empty($this->input->get('oauth_token')) || empty($this->input->get('oauth_verifier'))) {
+			    // Самый первый запрос
+			    $this->twitter->goToAuth();
+			} else {
+			    // Пришёл ответ без ошибок после запроса авторизации
+			    $oauth_token = trim($this->input->get('oauth_token'));
+			    $oauth_verifier = trim($this->input->get('oauth_verifier'));
+			    if (!$this->twitter->getToken($oauth_token, $oauth_verifier)) {
+			        die('Error - no token by code');
+			    }
+			    /*
+			     * На данном этапе можно проверить зарегистрирован ли у вас Twitter-юзер с id = $this->twitter->$userId
+			     * Если да, то можно просто авторизовать его и не запрашивать его данные.
+			     */
+
+			    $user = $this->twitter->getUser();
+			    print_r($user);
+			    /*
+			     * Вот и всё - мы узнали основные данные авторизованного юзера.
+			     * $user в этом примере состоит из многих полей: id, name, screen_name и т.д.
+			     */
+			}
+	}
+
+	public function odnoklassniki ()
+	{
+		$this->load->library('odnoklassniki');				// Пример использования класса:
+		if (!empty($this->input->get('error'))) {
+		    // Пришёл ответ с ошибкой. Например, юзер отменил авторизацию.
+		    die($this->input->get('error'));
+		} elseif (empty($this->input->get('code'))) {
+		    // Самый первый запрос
+		    $this->odnoklassniki->goToAuth();
+		} else {
+		    // Пришёл ответ без ошибок после запроса авторизации
+		    if (!$this->odnoklassniki->getToken($this->input->get('code'))) {
+		        die('Error - no token by code');
+		    }
+		    /*
+		     * На данном этапе можно проверить зарегистрирован ли у вас одноклассник с id = $this->odnoklassniki->$userId
+		     * Если да, то можно просто авторизовать его и не запрашивать его данные.
+		     */
+
+		    $user = $this->odnoklassniki->getUser();
+		    print_r($user);
+		    /*
+		     * Вот и всё - мы узнали основные данные авторизованного юзера.
+		     */
 		}
 	}
 
